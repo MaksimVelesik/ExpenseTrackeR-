@@ -1,0 +1,61 @@
+﻿@model IEnumerable<ExpenseTracker.ViewModels.ExpenseViewModel>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Список расходов</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success" role="alert">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+<form asp-action="TotalByPeriod" method="get">
+    <div class="form-group">
+        <label>С</label>
+        <input type="date" name="startDate" class="form-control" value="@(ViewBag.StartDate?.ToString("yyyy-MM-dd"))" />
+    </div>
+    <div class="form-group">
+        <label>По</label>
+        <input type="date" name="endDate" class="form-control" value="@(ViewBag.EndDate?.ToString("yyyy-MM-dd"))" />
+    </div>
+    <button type="submit" class="btn btn-primary">Посчитать сумму</button>
+</form>
+
+@if (ViewBag.TotalAmount != null)
+{
+    <p>Сумма за период (@(((DateTime)ViewBag.StartDate).ToString("dd.MM.yyyy")) - @(((DateTime)ViewBag.EndDate).ToString("dd.MM.yyyy"))): @ViewBag.TotalAmount</p>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Сумма</th>
+            <th>Категория</th>
+            <th>Дата</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (!Model.Any())
+        {
+            <tr>
+                <td colspan="3">Нет расходов для отображения.</td>
+            </tr>
+        }
+        else
+        {
+            @foreach (var expense in Model)
+            {
+                <tr>
+                    <td>@expense.Amount</td>
+                    <td>@expense.Category</td>
+                    <td>@expense.Date.ToString("yyyy-MM-dd")</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+<a href="/Expenses/Add" class="btn btn-primary">Добавить расход</a>
